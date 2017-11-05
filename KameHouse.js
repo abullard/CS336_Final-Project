@@ -8,6 +8,8 @@ var scene, camera, renderer;
 var width  = window.innerWidth;
 var height = window.innerHeight;
 
+var SPEED = 0.01;
+
 function init() {
 
   scene = new THREE.Scene();
@@ -20,6 +22,7 @@ function init() {
 
   var render = function () {
       renderer.render(scene, camera);
+      rotateMesh();
       requestAnimationFrame(render);
   };
 
@@ -55,6 +58,14 @@ function initRenderer() {
   var canvas = document.getElementById('theCanvas');
   renderer = new THREE.WebGLRenderer({canvas: canvas});
   renderer.setClearColor(0xf0f0f0);
+}
+
+function rotateMesh() {
+    if (!mesh) {
+        return;
+    }
+
+    mesh.rotation.y -= SPEED;
 }
 
 // stuff for austin to do
