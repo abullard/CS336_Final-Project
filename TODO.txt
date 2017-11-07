@@ -1,0 +1,8 @@
+Todo List
+---------
+- add ocean sound (file from /sounds)
+- create the Water
+- create the reflections
+- finish the models
+- finish scaling and placing models
+- write fragment shader to add grass to island.
