@@ -6,3 +6,4 @@ Todo List
 - finish the models
 - finish scaling and placing models
 - write fragment shader to add grass to island.
+- write skybox.
