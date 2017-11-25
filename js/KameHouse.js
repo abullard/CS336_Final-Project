@@ -11,12 +11,14 @@ var height = window.innerHeight;
 function init() {
 
   scene = new THREE.Scene();
+  initSkybox();
   initMesh();
   initCamera();
   initLights();
   initRenderer();
   // initWater();
   // initReflections();
+  initSounds();
 
   document.body.appendChild(renderer.domElement);
 
@@ -28,7 +30,21 @@ function init() {
   render();
 }
 
+function initSkybox(){
+  scene.background = new THREE.CubeTextureLoader()
+    .setPath( 'images/test/dawnmountain-' )
+    .load( [
+      'xpos.png',
+      'xneg.png',
+      'ypos.png',
+      'yneg.png',
+      'zpos.png',
+      'zneg.png'
+    ]);
+}
+
 function initMesh() {
+
   var loader = new THREE.JSONLoader();
 
   // island model
@@ -75,7 +91,7 @@ function initCamera() {
 function initRenderer() {
   var canvas = document.getElementById('theCanvas');
   renderer = new THREE.WebGLRenderer({canvas: canvas});
-  renderer.setClearColor(0xf0f0f0);
+  //renderer.setClearColor(0xf0f0f0);
 }
 
 function initWater() {
@@ -84,4 +100,20 @@ function initWater() {
 
 function initReflections() {
 
+}
+
+function initSounds() {
+    var listener = new THREE.AudioListener();
+    camera.add(listener);
+
+    var sound = new THREE.Audio(listener);
+
+    var audioLoader = new THREE.AudioLoader();
+
+    audioLoader.load('sounds/Beach Waves-SoundBible.com-1024681188.mp3', function(buffer) {
+        sound.setBuffer(buffer);
+        sound.setLoop(true);
+        sound.setVolume(0.5);
+        sound.play();
+    });
 }
