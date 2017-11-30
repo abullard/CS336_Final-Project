@@ -44,42 +44,78 @@ function initSkybox(){
 }
 
 function initMesh() {
-
   var loader = new THREE.JSONLoader();
 
   // island model
-  loader.load('./models/island.json', function(geometry, materials) {
+  loader.load('./models/island2.json', function(geometry, materials) {
       var island = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
       island.scale.x = island.scale.y = island.scale.z = 0.88;
       island.position.z = 2.3;
       island.position.y = -0.4;
+      island.receiveShadow = true;
       scene.add(island);
   });
 
   // palm tree model
   loader.load('./models/palmtree.json', function(geometry, materials) {
-
       var tree = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
-      tree.scale.x = tree.scale.y = tree.scale.z = 0.3;
-      tree.position.set(1.6, 1, 1.6);
+      tree.scale.x = tree.scale.y = tree.scale.z = 0.35;
+      tree.position.set(1, 1, 1.6);
+      tree.castShadow = true;
+      tree.receiveShadow = true;
       scene.add(tree);
 
       var tree2 = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
-      tree2.scale.x = tree2.scale.y = tree2.scale.z = 0.3;
-      tree2.position.set(-1, 1, 4.3);
+      tree2.scale.x = tree2.scale.y = tree2.scale.z = 0.35;
+      tree2.position.set(-1, 1, 2.9);
+      tree2.castShadow = true;
+      tree2.receiveShadow = true;
       scene.add(tree2);
   });
 
   // kame house model
+  loader.load('./models/kame.json', function(geometry, materials) {
+      var house = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+      house.scale.x = house.scale.y = house.scale.z = 0.18;
+      //house.rotation.set(0, 0.8, -0.03);
+      house.rotation.set(0, 0.8, 0);
+      house.position.set(0.45, 1.47, 2.8);
+      house.castShadow = true;
+      house.receiveShadow = true;
+      scene.add(house);
+  });
 
   // bush model
+  loader.load('./models/bush.json', function(geometry, materials) {
+      var bush = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+      bush.scale.x = bush.scale.y = bush.scale.z = 0.35;
+      bush.position.set(-1, 1.3, 2.6);
+      bush.castShadow = true;
+      bush.receiveShadow = true;
+      scene.add(bush);
+
+      var bush2 = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+      bush2.scale.x = bush2.scale.y = bush2.scale.z = 0.35;
+      bush2.position.set(-1.1, 1.2, 2.9);
+      bush2.castShadow = true;
+      bush2.receiveShadow = true;
+      scene.add(bush2);
+
+      var bush3 = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+      bush3.scale.x = bush3.scale.y = bush3.scale.z = 0.35;
+      bush3.position.set(1, 1.2, 0);
+      bush3.castShadow = true;
+      bush3.receiveShadow = true;
+      scene.add(bush3);
+  });
 
   // rock model
   loader.load('./models/rock.json', function(geometry, materials) {
-      var material = new THREE.MeshBasicMaterial( { color: 0x5c5d60 } );
-      var rock = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(material));
+      var rock = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
       rock.scale.x = rock.scale.y = rock.scale.z = 0.2;
       rock.position.set(-0.7, 1.5, 4.3);
+      rock.castShadow = true;
+      rock.receiveShadow = true;
       scene.add(rock);
   });
 
@@ -94,8 +130,9 @@ function initMesh() {
 }
 
 function initLights() {
-    var light = new THREE.PointLight(0xffffff, 1.0);
-    light.position.set(0, 20, -5);
+  var light = new THREE.DirectionalLight( 0xffffff, 1, 100 );
+    light.position.set(0, 40, 20);
+    light.castShadow = true;
     scene.add(light);
 
     var ambientLight = new THREE.AmbientLight(0xffffff);
@@ -104,14 +141,15 @@ function initLights() {
 
 function initCamera() {
     camera = new THREE.PerspectiveCamera(90, width / height, 1, 10);
-    camera.position.set(2.5, 3, 6.5);
+    camera.position.set(2.5, 2.3, 6);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 }
 
 function initRenderer() {
   renderer = new THREE.WebGLRenderer( {antialias: true} );
   renderer.setSize(width, height);
-  //renderer.setClearColor(0xf0f0f0);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
 }
 
 function initWater() {
