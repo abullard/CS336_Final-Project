@@ -16,8 +16,8 @@ function init() {
   initCamera();
   initLights();
   initRenderer();
-  // initWater();
-  // initReflections();
+  //initWater();
+  //initReflections();
   initSounds();
 
   document.body.appendChild(renderer.domElement);
@@ -112,7 +112,7 @@ function initMesh() {
   // rock model
   loader.load('./models/rock.json', function(geometry, materials) {
       var rock = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
-      rock.scale.x = rock.scale.y = rock.scale.z = 0.2;
+      rock.scale.x = rock.scale.y = rock.scale.z = 0.4;
       rock.position.set(-0.7, 1.5, 4.3);
       rock.castShadow = true;
       rock.receiveShadow = true;
@@ -131,9 +131,12 @@ function initMesh() {
 
 function initLights() {
   var light = new THREE.DirectionalLight( 0xffffff, 1, 100 );
-    light.position.set(0, 40, 20);
+    light.position.set(0, 40, 30);
     light.castShadow = true;
     scene.add(light);
+
+    light.shadow.mapSize.width = 1024;
+    light.shadow.mapSize.height = 1024;
 
     var ambientLight = new THREE.AmbientLight(0xffffff);
     scene.add(ambientLight);
@@ -149,7 +152,7 @@ function initRenderer() {
   renderer = new THREE.WebGLRenderer( {antialias: true} );
   renderer.setSize(width, height);
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 }
 
 function initWater() {
