@@ -1,10 +1,40 @@
 <html>
 	<head>
-		<title>Kame House - Water</title>
+		<title>Water</title>
 	</head>
 	<body>
+		<script id="vertexShader" type="x-shader/x-vertex">
+		uniform float timeScale;
+		uniform float time;
+		uniform vec3 wave1;
+		uniform vec3 wave2;
+		uniform vec3 wave3;
+			void main()
+			{
+				vec4 temp = vec4(position, 1.0);
 
+				float linearSpace = position.x * wave1.x + position.y * wave1.y;
+				temp.z += wave1.z * sin(linearSpace + timeScale * time);
+
+				linearSpace = position.x * wave2.x + position.y * wave2.y;
+				temp.z += wave2.z * sin(linearSpace + timeScale * time);
+
+				linearSpace = position.x * wave3.x + position.y * wave3.y;
+				temp.z += wave3.z * sin(linearSpace + timeScale * time);
+
+				vec4 modelViewPosition = modelViewMatrix * temp;
+				gl_Position = projectionMatrix * modelViewPosition;
+			}
+		</script>
+		<script id="fragmentShader" type="x-shader/x-fragment">
+			void main()
+			{
+
+				gl_FragColor = vec4(0.2, 0.2, 1.0, 0.9);
+			}
+		</script>
 		<script src="http://threejs.org/build/three.min.js"></script>
+		<script src="./js/cameraControls.js"></script>
 		<script src="./js/KameHouse.js"></script>
 		<script>window.onload = init</script>
 	</body>
