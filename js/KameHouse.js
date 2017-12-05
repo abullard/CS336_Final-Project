@@ -9,7 +9,7 @@ var width  = window.innerWidth;
 var height = window.innerHeight;
 
 var water;
-var time = 0.0;
+var time = 0.0, timeScale = 0.01;
 
 //translate keypress events to strings
 //from http://javascript.info/tutorial/keyboard-events
@@ -162,8 +162,8 @@ function initLights() {
 
 function initCamera() {
     camera = new THREE.PerspectiveCamera(90, width / height, 1, 10000);
-    camera.position.set(2.5, 3.2, 5.7);
-    camera.lookAt(new THREE.Vector3(0, 0, 0));
+    camera.position.set(2.5, 3.13, 5.7);
+    camera.lookAt(new THREE.Vector3(0, 1, 0));
 }
 
 function initRenderer() {
@@ -174,19 +174,16 @@ function initRenderer() {
 }
 
 function initWater() {
-  var loader = new THREE.TextureLoader();
-  var texture = loader.load('./images/waternormals.jpg');
-
-  var geometry = new THREE.PlaneBufferGeometry(2000, 2000, 1000, 1000);
-  var tempMaterial = new THREE.MeshPhongMaterial({color:0x00ccff, specular: 0x222222, shininess: 1, opacity: 0.8});
+  var geometry = new THREE.PlaneBufferGeometry(700, 700, 700, 700);
   var material = new THREE.ShaderMaterial({
     transparent: true,
+    wireframe: true,
     uniforms: {
       timeScale: { value: 0.01 },
       time: { value: time },
-      wave1: { value: new THREE.Vector3(-1.0, -1.0, 0.01) },
-      wave2: { value: new THREE.Vector3(-0.5, -0.5, 0.01) },
-      wave3: { value: new THREE.Vector3(0.5, 0.0, 0.01) }
+      wave1: { value: new THREE.Vector3(-3.0, -3.0, 0.03) },
+      wave2: { value: new THREE.Vector3(-2.5, -2.5, 0.03) },
+      wave3: { value: new THREE.Vector3(0.5, 0.0, 0.03) }
     },
   	vertexShader: document.getElementById( 'vertexShader' ).textContent,
   	fragmentShader: document.getElementById( 'fragmentShader' ).textContent
@@ -198,7 +195,7 @@ function initWater() {
   scene.add(water);
 
   // sea floor
-  geometry = new THREE.PlaneGeometry(2000, 2000, 4);
+  geometry = new THREE.PlaneBufferGeometry(700, 700, 4);
   material = new THREE.MeshBasicMaterial({ color: 0x110084 });
   var seaFloor = new THREE.Mesh(geometry, material);
   seaFloor.rotation.x = -1.57;
