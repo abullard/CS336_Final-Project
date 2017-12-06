@@ -51,32 +51,25 @@ function init() {
 }
 
 function initWater() {
-  var geometry = new THREE.PlaneBufferGeometry(20, 20, 1000, 1000);
-  var tempMaterial = new THREE.MeshPhongMaterial({color:0x00ccff, specular: 0x222222, shininess: 1, opacity: 0.8});
+  var geometry = new THREE.PlaneBufferGeometry(700, 700, 700, 700);
   var material = new THREE.ShaderMaterial({
     transparent: true,
+    // wireframe: true,
     uniforms: {
       timeScale: { value: 0.01 },
       time: { value: time },
-      wave1: { value: new THREE.Vector3(-1.0, -1.0, 0.2) },
-      wave2: { value: new THREE.Vector3(-0.5, -0.5, 0.2) },
-      wave3: { value: new THREE.Vector3(0.5, 0.0, 0.2) }
+      wave1: { value: new THREE.Vector3(-3.0, -3.0, 0.02) },
+      wave2: { value: new THREE.Vector3(-2.5, -2.5, 0.02) },
+      wave3: { value: new THREE.Vector3(0.5, 0.0, 0.02) }
     },
-
-	vertexShader: document.getElementById( 'vertexShader' ).textContent,
-	fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
-
-});
+  	vertexShader: document.getElementById( 'vertexShader' ).textContent,
+  	fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+  });
   plane = new THREE.Mesh(geometry, material);
   console.log(plane);
   plane.rotation.x = -1.57;
   scene.add(plane);
 }
-
-function initReflections() {
-
-}
-
 
 function initLights() {
   var light = new THREE.DirectionalLight( 0xffffff, 1, 100 );

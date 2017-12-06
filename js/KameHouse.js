@@ -11,27 +11,7 @@ var height = window.innerHeight;
 var water;
 var time = 0.0, timeScale = 0.01;
 
-//translate keypress events to strings
-//from http://javascript.info/tutorial/keyboard-events
-function getChar(event) {
-  if (event.which == null) {
-    return String.fromCharCode(event.keyCode); // IE
-  } else if (event.which!=0 && event.charCode!=0) {
-    return String.fromCharCode(event.which);   // the rest
-  } else {
-    return null; // special key
-  }
-}
-
-function handleKeyPress(event)
-{
-  var ch = getChar(event);
-  if (cameraControl(camera, ch)) return;
-}
-
 function init() {
-
-  window.onkeypress = handleKeyPress;
 
   scene = new THREE.Scene();
   initSkybox();
