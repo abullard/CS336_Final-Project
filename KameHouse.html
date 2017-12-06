@@ -4,11 +4,16 @@
 	</head>
 	<body>
 		<script id="vertexShader" type="x-shader/x-vertex">
-		uniform float timeScale;
-		uniform float time;
-		uniform vec3 wave1;
-		uniform vec3 wave2;
-		uniform vec3 wave3;
+			uniform float timeScale;
+			uniform float time;
+
+			uniform vec3 wave1;
+			uniform vec3 wave2;
+			uniform vec3 wave3;
+
+			varying vec2 uvTemp;
+			varying float timeTemp;
+			varying vec4 look;
 			void main()
 			{
 				vec4 temp = vec4(position, 1.0);
@@ -27,16 +32,47 @@
 				 y = (position.y * wave3.y + timeScale * time);
 				linearSpace = sin(x) + cos(y);
 				temp.z += wave3.z * linearSpace;
-				
+
+				timeTemp = timeScale * time;
+				uvTemp = uv;
+				vec3 l = normalize(position - cameraPosition);
+				look = vec4(l.x, l.y, l.z, 0.0);
+
 				vec4 modelViewPosition = modelViewMatrix * temp;
 				gl_Position = projectionMatrix * modelViewPosition;
 			}
 		</script>
+
 		<script id="fragmentShader" type="x-shader/x-fragment">
+			uniform sampler2D u_texture;
+			uniform sampler2D d_texture;
+
+			varying vec2 uvTemp;
+			varying float timeTemp;
+			varying vec4 look;
 			void main()
 			{
+				vec2 timevec = vec2(timeTemp * 0.01/35.0);
+				vec2 uv0 = (uvTemp + timevec) * vec2(35.0 * 8.0);
+				vec2 uv1 = (uvTemp + vec2(timeTemp * 0.02/35.0, 0.0)) * vec2(35.0 * 6.0);
 
-				gl_FragColor = vec4(0.2, 0.2, 1.0, 0.9);
+				vec4 norm0 = texture2D(u_texture, uv0);
+				vec4 norm1 = texture2D(u_texture, uv1);
+
+				vec4 norm = (norm0 + norm1) * vec4(0.5, 0.5, 0.5, 0.0);
+				norm = norm * vec4(2.0) - vec4(1.0, 1.0, 1.0, 0.0);
+
+				vec4 blue0 = texture2D(d_texture, uv0);
+				vec4 blue1 = texture2D(d_texture, uv1);
+				vec4 blue = (blue0 + blue1) * vec4(0.5, 0.5, 0.5, 1.0);
+
+				vec4 light = normalize(vec4(0.4, 0.2, 1.0, 0.0));
+				vec4 reflect = reflect(light, norm);
+
+				float d = min(max(abs(dot(norm, light)), 0.2), 1.0);
+				float s = 8.0 * pow(max(0.0, dot(look, reflect)), 8.0);
+
+				gl_FragColor = blue * vec4(d+s, d+s, d+s, 0.95);
 			}
 		</script>
 		<script src="http://threejs.org/build/three.min.js"></script>

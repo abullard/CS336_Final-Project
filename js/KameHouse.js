@@ -161,7 +161,7 @@ function initLights() {
 }
 
 function initCamera() {
-    camera = new THREE.PerspectiveCamera(90, width / height, 1, 10000);
+    camera = new THREE.PerspectiveCamera(90, width / height, 0.4, 650);
     camera.position.set(2.5, 3.13, 5.7);
     camera.lookAt(new THREE.Vector3(0, 1, 0));
 }
@@ -174,16 +174,24 @@ function initRenderer() {
 }
 
 function initWater() {
+  var normals = new THREE.TextureLoader().load( "./images/waternormals.jpg" );
+  normals.wrapS = normals.wrapT = THREE.RepeatWrapping;
+
+  var watertex = new THREE.TextureLoader().load( "./images/watertex.jpg" );
+  watertex.wrapS = watertex.wrapT = THREE.RepeatWrapping;
+
   var geometry = new THREE.PlaneBufferGeometry(700, 700, 700, 700);
   var material = new THREE.ShaderMaterial({
     transparent: true,
-    wireframe: true,
+    // wireframe: true,
     uniforms: {
+      u_texture: {type: 't', value: normals},
+      d_texture: {type: 't', value: watertex},
       timeScale: { value: 0.01 },
       time: { value: time },
-      wave1: { value: new THREE.Vector3(-3.0, -3.0, 0.03) },
-      wave2: { value: new THREE.Vector3(-2.5, -2.5, 0.03) },
-      wave3: { value: new THREE.Vector3(0.5, 0.0, 0.03) }
+      wave1: { value: new THREE.Vector3(-3.0, -3.0, 0.01) },
+      wave2: { value: new THREE.Vector3(-2.5, -2.5, 0.01) },
+      wave3: { value: new THREE.Vector3(0.5, 0.0, 0.01) }
     },
   	vertexShader: document.getElementById( 'vertexShader' ).textContent,
   	fragmentShader: document.getElementById( 'fragmentShader' ).textContent
@@ -192,6 +200,7 @@ function initWater() {
   water = new THREE.Mesh(geometry, material);
   water.rotation.x = -1.57;
   water.position.y = 1.85;
+  console.log(water.geometry.attributes);
   scene.add(water);
 
   // sea floor
