@@ -11,27 +11,7 @@ var height = window.innerHeight;
 var water;
 var time = 0.0, timeScale = 0.01;
 
-//translate keypress events to strings
-//from http://javascript.info/tutorial/keyboard-events
-function getChar(event) {
-  if (event.which == null) {
-    return String.fromCharCode(event.keyCode); // IE
-  } else if (event.which!=0 && event.charCode!=0) {
-    return String.fromCharCode(event.which);   // the rest
-  } else {
-    return null; // special key
-  }
-}
-
-function handleKeyPress(event)
-{
-  var ch = getChar(event);
-  if (cameraControl(camera, ch)) return;
-}
-
 function init() {
-
-  window.onkeypress = handleKeyPress;
 
   scene = new THREE.Scene();
   initSkybox();
@@ -177,13 +157,13 @@ function initWater() {
   var geometry = new THREE.PlaneBufferGeometry(700, 700, 700, 700);
   var material = new THREE.ShaderMaterial({
     transparent: true,
-    wireframe: true,
+    // wireframe: true,
     uniforms: {
       timeScale: { value: 0.01 },
       time: { value: time },
-      wave1: { value: new THREE.Vector3(-3.0, -3.0, 0.03) },
-      wave2: { value: new THREE.Vector3(-2.5, -2.5, 0.03) },
-      wave3: { value: new THREE.Vector3(0.5, 0.0, 0.03) }
+      wave1: { value: new THREE.Vector3(-3.0, -3.0, 0.02) },
+      wave2: { value: new THREE.Vector3(-2.5, -2.5, 0.02) },
+      wave3: { value: new THREE.Vector3(0.5, 0.0, 0.02) }
     },
   	vertexShader: document.getElementById( 'vertexShader' ).textContent,
   	fragmentShader: document.getElementById( 'fragmentShader' ).textContent

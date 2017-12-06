@@ -4,43 +4,59 @@
 	</head>
 	<body>
 		<script id="vertexShader" type="x-shader/x-vertex">
-		uniform float timeScale;
-		uniform float time;
-		uniform vec3 wave1;
-		uniform vec3 wave2;
-		uniform vec3 wave3;
+			uniform float timeScale;
+			uniform float time;
+			uniform vec3 wave1;
+			uniform vec3 wave2;
+			uniform vec3 wave3;
+
+			varying float positionZ;
 			void main()
 			{
 				vec4 temp = vec4(position, 1.0);
 
-				float x = (position.x * wave1.x + timeScale * time);
-				float y = (position.y * wave1.y + timeScale * time);
-				float linearSpace = sin(x) + cos(y);
-				temp.z += wave1.z * linearSpace;
+				float linearSpace = position.x * wave1.x + position.y * wave1.y;
+				temp.z += wave1.z * sin(linearSpace + timeScale * time);
 
-				 x = (position.x * wave2.x + timeScale * time);
-				 y = (position.y * wave2.y + timeScale * time);
-				linearSpace = sin(x) + cos(y);
-				temp.z += wave2.z * linearSpace;
+				linearSpace = position.x * wave2.x + position.y * wave2.y;
+				temp.z += wave2.z * sin(linearSpace + timeScale * time);
 
-				 x = (position.x * wave3.x + timeScale * time);
-				 y = (position.y * wave3.y + timeScale * time);
-				linearSpace = sin(x) + cos(y);
-				temp.z += wave3.z * linearSpace;
-				
+				linearSpace = position.x * wave3.x + position.y * wave3.y;
+				temp.z += wave3.z * sin(linearSpace + timeScale * time);
+
+				//  x = (position.x * wave2.x + timeScale * time);
+				//  y = (position.y * wave2.y + timeScale * time);
+				// linearSpace = sin(x) + cos(y);
+				// temp.z += wave2.z * linearSpace;
+
+				positionZ = temp.z;
+
 				vec4 modelViewPosition = modelViewMatrix * temp;
 				gl_Position = projectionMatrix * modelViewPosition;
 			}
 		</script>
 		<script id="fragmentShader" type="x-shader/x-fragment">
+			varying float positionZ;
 			void main()
 			{
+				// if(positionZ <= -0.5) {
+				// 	gl_FragColor = vec4(0.1, 0.1, 0.3, 0.9);
+				// } else if(positionZ > -0.5 && positionZ <= 0.5) {
+				// 	gl_FragColor = vec4(0.2, 0.2, 0.8, 0.9);
+				// } else if(positionZ > 0.5) {
+				// 	gl_FragColor = vec4(0.9, 0.9, 0.9, 0.9);
+				// }
 
-				gl_FragColor = vec4(0.2, 0.2, 1.0, 0.9);
+				if(positionZ > 0.045) {
+					gl_FragColor = vec4(0.9, 0.9, 0.9, 0.98);
+				} else if(positionZ <= 0.045 && positionZ >= -0.03) {
+					gl_FragColor = vec4(0.2, 0.2, 0.8, 0.98);
+				} else if(positionZ < -0.03) {
+					gl_FragColor = vec4(0.1, 0.1, 0.8, 0.98);
+				}
 			}
 		</script>
 		<script src="http://threejs.org/build/three.min.js"></script>
-		<script src="./js/cameraControls.js"></script>
 		<script src="./js/KameHouse.js"></script>
 		<script>window.onload = init</script>
 	</body>
