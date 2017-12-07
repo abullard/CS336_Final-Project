@@ -46,36 +46,43 @@
 		<script id="fragmentShader" type="x-shader/x-fragment">
 			uniform sampler2D u_texture;
 			uniform sampler2D d_texture;
+			uniform samplerCube texCube;
 
 			varying vec2 uvTemp;
 			varying float timeTemp;
 			varying vec4 look;
 			void main()
 			{
-				vec2 timevec = vec2(timeTemp * 0.01/35.0);
-				vec2 uv0 = (uvTemp + timevec) * vec2(35.0 * 8.0);
-				vec2 uv1 = (uvTemp + vec2(timeTemp * 0.02/35.0, 0.0)) * vec2(35.0 * 6.0);
-
+				vec2 uv0 = (uvTemp + vec2(timeTemp * 0.004/35.0)) * vec2(35.0 * 8.0);
+				vec2 uv1 = (uvTemp + vec2(timeTemp * 0.001/35.0, 0.0)) * vec2(35.0 * 6.0);
 				vec4 norm0 = texture2D(u_texture, uv0);
 				vec4 norm1 = texture2D(u_texture, uv1);
-
 				vec4 norm = (norm0 + norm1) * vec4(0.5, 0.5, 0.5, 0.0);
+
 				norm = norm * vec4(2.0) - vec4(1.0, 1.0, 1.0, 0.0);
 
 				vec4 blue0 = texture2D(d_texture, uv0);
 				vec4 blue1 = texture2D(d_texture, uv1);
 				vec4 blue = (blue0 + blue1) * vec4(0.5, 0.5, 0.5, 1.0);
 
-				vec4 light = normalize(vec4(0.4, 0.2, 1.0, 0.0));
+				vec4 light = vec4(1.0, 1.0, 1.0, 0.0);
 				vec4 reflect = reflect(light, norm);
 
-				float d = min(max(abs(dot(norm, light)), 0.2), 1.0);
-				float s = 8.0 * pow(max(0.0, dot(look, reflect)), 8.0);
+				float diffuse = max(dot(norm, light), 0.0);
+				float spec = pow(max(0.0, dot(look, reflect)), 2.0);
 
-				gl_FragColor = blue * vec4(d+s, d+s, d+s, 0.95);
+				vec4 skyref = textureCube(texCube, vec3(norm.x, norm.y, norm.z));
+
+				// gl_FragColor = skyref;
+
+				gl_FragColor = (0.95 * blue) * vec4(diffuse + spec,
+																	 diffuse + spec,
+																	 diffuse + spec,
+																	 0.43);
 			}
 		</script>
 		<script src="http://threejs.org/build/three.min.js"></script>
+		<script src="./js/cameraControls.js"></script>
 		<script src="./js/KameHouse.js"></script>
 		<script>window.onload = init</script>
 	</body>

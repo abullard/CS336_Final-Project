@@ -10,18 +10,38 @@ var height = window.innerHeight;
 
 var water;
 var time = 0.0, timeScale = 0.01;
+var textureCube;
+
+//translate keypress events to strings
+//from http://javascript.info/tutorial/keyboard-events
+function getChar(event) {
+  if (event.which == null) {
+    return String.fromCharCode(event.keyCode); // IE
+  } else if (event.which!=0 && event.charCode!=0) {
+    return String.fromCharCode(event.which);   // the rest
+  } else {
+    return null; // special key
+  }
+}
+
+function handleKeyPress(event)
+{
+  var ch = getChar(event);
+  if (cameraControl(camera, ch)) return;
+}
 
 function init() {
 
+  window.onkeypress = handleKeyPress;
+
   scene = new THREE.Scene();
   initSkybox();
-  initMesh();
+  initModels();
   initCamera();
   initLights();
   initRenderer();
   initWater();
   initFog();
-  //initReflections();
   initSounds();
 
   document.body.appendChild(renderer.domElement);
@@ -38,8 +58,7 @@ function init() {
 
 function initSkybox(){
   scene.background = new THREE.CubeTextureLoader()
-    .setPath( 'images/other/' )
-    .load( [
+    .setPath('./images/other/').load([
       'right.png',
       'left.png',
       'top.png',
@@ -47,9 +66,11 @@ function initSkybox(){
       'front.png',
       'back.png'
     ]);
+
+    textureCube = scene.background;
 }
 
-function initMesh() {
+function initModels() {
   var loader = new THREE.JSONLoader();
 
   // island model
@@ -129,7 +150,7 @@ function initMesh() {
 
 function initLights() {
   var light = new THREE.DirectionalLight( 0xffffff, 1, 100 );
-    light.position.set(0, 40, 30);
+    light.position.set(0, 50, 17);
     light.castShadow = true;
     scene.add(light);
 
@@ -157,21 +178,21 @@ function initWater() {
   var normals = new THREE.TextureLoader().load( "./images/waternormals.jpg" );
   normals.wrapS = normals.wrapT = THREE.RepeatWrapping;
 
-  var watertex = new THREE.TextureLoader().load( "./images/watertex.jpg" );
+  var watertex = new THREE.TextureLoader().load( "./images/watertex5.jpg" );
   watertex.wrapS = watertex.wrapT = THREE.RepeatWrapping;
 
   var geometry = new THREE.PlaneBufferGeometry(700, 700, 700, 700);
   var material = new THREE.ShaderMaterial({
     transparent: true,
-    // wireframe: true,
     uniforms: {
       u_texture: {type: 't', value: normals},
       d_texture: {type: 't', value: watertex},
+      texCube: {type: 't', value: textureCube},
       timeScale: { value: 0.01 },
       time: { value: time },
-      wave1: { value: new THREE.Vector3(-3.0, -3.0, 0.01) },
-      wave2: { value: new THREE.Vector3(-2.5, -2.5, 0.01) },
-      wave3: { value: new THREE.Vector3(0.5, 0.0, 0.01) }
+      wave1: { value: new THREE.Vector3(-3.0, -3.0, 0.005) },
+      wave2: { value: new THREE.Vector3(-2.5, -2.5, 0.005) },
+      wave3: { value: new THREE.Vector3(0.5, 0.0, 0.005) }
     },
   	vertexShader: document.getElementById( 'vertexShader' ).textContent,
   	fragmentShader: document.getElementById( 'fragmentShader' ).textContent
@@ -180,20 +201,24 @@ function initWater() {
   water = new THREE.Mesh(geometry, material);
   water.rotation.x = -1.57;
   water.position.y = 1.85;
-  console.log(water.geometry.attributes);
   scene.add(water);
 
   // sea floor
   geometry = new THREE.PlaneBufferGeometry(700, 700, 4);
-  material = new THREE.MeshBasicMaterial({ color: 0x110084 });
+  material = new THREE.MeshBasicMaterial({ color: 0x140459 });
   var seaFloor = new THREE.Mesh(geometry, material);
   seaFloor.rotation.x = -1.57;
   seaFloor.position.y = 0.4;
   scene.add(seaFloor);
-}
 
-function initReflections() {
-
+  geometry = new THREE.SphereGeometry(1.5, 100, 100);
+  material = new THREE.MeshPhongMaterial({
+    envMap: textureCube,
+    specular: 0x222222
+  });
+  var sphere = new THREE.Mesh(geometry, material);
+  sphere.position.y = 10;
+  scene.add(sphere);
 }
 
 function initFog() {
@@ -205,7 +230,6 @@ function initSounds() {
     camera.add(listener);
 
     var sound = new THREE.Audio(listener);
-
     var audioLoader = new THREE.AudioLoader();
 
     audioLoader.load('sounds/Beach Waves-SoundBible.com-1024681188.mp3', function(buffer) {

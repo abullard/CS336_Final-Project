@@ -51,22 +51,20 @@ function init() {
 }
 
 function initWater() {
-  var geometry = new THREE.PlaneBufferGeometry(700, 700, 700, 700);
+  var geometry = new THREE.PlaneBufferGeometry(20, 20, 200, 200);
   var material = new THREE.ShaderMaterial({
     transparent: true,
-    // wireframe: true,
     uniforms: {
       timeScale: { value: 0.01 },
       time: { value: time },
-      wave1: { value: new THREE.Vector3(-3.0, -3.0, 0.02) },
-      wave2: { value: new THREE.Vector3(-2.5, -2.5, 0.02) },
-      wave3: { value: new THREE.Vector3(0.5, 0.0, 0.02) }
+      wave1: { value: new THREE.Vector3(-1.0, -3.0, 0.1) },
+      wave2: { value: new THREE.Vector3(3.5, -4.5, 0.1) },
+      wave3: { value: new THREE.Vector3(-0.5, 4.0, 0.01) }
     },
   	vertexShader: document.getElementById( 'vertexShader' ).textContent,
   	fragmentShader: document.getElementById( 'fragmentShader' ).textContent
   });
   plane = new THREE.Mesh(geometry, material);
-  console.log(plane);
   plane.rotation.x = -1.57;
   scene.add(plane);
 }
