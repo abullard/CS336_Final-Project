@@ -18,6 +18,7 @@
 			{
 				vec4 temp = vec4(position, 1.0);
 
+				// calculation for animating the plane height
 				float x = (position.x * wave1.x + timeScale * time);
 				float y = (position.y * wave1.y + timeScale * time);
 				float linearSpace = sin(x) + cos(y);
@@ -39,6 +40,7 @@
 				look = vec4(l.x, l.y, l.z, 0.0);
 
 				vec4 modelViewPosition = modelViewMatrix * temp;
+				look = projectionMatrix * modelViewPosition * -look;
 				gl_Position = projectionMatrix * modelViewPosition;
 			}
 		</script>
@@ -53,36 +55,39 @@
 			varying vec4 look;
 			void main()
 			{
+				// sample from normal map texture
 				vec2 uv0 = (uvTemp + vec2(timeTemp * 0.004/35.0)) * vec2(35.0 * 8.0);
 				vec2 uv1 = (uvTemp + vec2(timeTemp * 0.001/35.0, 0.0)) * vec2(35.0 * 6.0);
 				vec4 norm0 = texture2D(u_texture, uv0);
 				vec4 norm1 = texture2D(u_texture, uv1);
-				vec4 norm = (norm0 + norm1) * vec4(0.5, 0.5, 0.5, 0.0);
+				vec4 norm = (norm0 + norm1) * vec4(0.5, 0.5, 0.5, 1.0);
 
-				norm = norm * vec4(2.0) - vec4(1.0, 1.0, 1.0, 0.0);
+				// change scale to [-1,1]
+				norm = norm * vec4(2.0) - vec4(1.0, 1.0, 1.0, 1.0);
 
+				// sample from water texture
 				vec4 blue0 = texture2D(d_texture, uv0);
 				vec4 blue1 = texture2D(d_texture, uv1);
 				vec4 blue = (blue0 + blue1) * vec4(0.5, 0.5, 0.5, 1.0);
 
+				// lighting diffuse and specular
 				vec4 light = vec4(1.0, 1.0, 1.0, 0.0);
-				vec4 reflect = reflect(light, norm);
-
+				vec4 reflect1 = reflect(light, norm);
 				float diffuse = max(dot(norm, light), 0.0);
-				float spec = pow(max(0.0, dot(look, reflect)), 2.0);
+				float spec = pow(max(0.0, dot(look, reflect1)), 2.0);
 
-				vec4 skyref = textureCube(texCube, vec3(norm.x, norm.y, norm.z));
+				// sample from cubeMap for skybox reflections
+				vec4 s_tex = normalize(reflect(-look, norm));
+				vec4 skyref = textureCube(texCube, s_tex.xyz);
 
-				// gl_FragColor = skyref;
-
-				gl_FragColor = (0.95 * blue) * vec4(diffuse + spec,
+				//gl_FragColor = skyref;
+				gl_FragColor = skyref * (0.95 * blue) * vec4(diffuse + spec,
 																	 diffuse + spec,
 																	 diffuse + spec,
 																	 0.43);
 			}
 		</script>
 		<script src="http://threejs.org/build/three.min.js"></script>
-		<script src="./js/cameraControls.js"></script>
 		<script src="./js/KameHouse.js"></script>
 		<script>window.onload = init</script>
 	</body>
